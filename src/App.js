@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Breadcrumb, Layout, Menu, theme, Input, Button } from 'antd';
 import BasicSearch from './pages/BasicSearch';
 import FullSearch from './pages/FullSearch';
 
@@ -11,6 +11,14 @@ const App = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  const [processNumber, setProcessNumber] = useState('');
+  const [filtered, setFiltered] = useState(false);
+
+  const handleSearch = () => {
+    // Set filtered to true to simulate filtering
+    setFiltered(true);
+  };
 
   return (
     <Router>
@@ -46,18 +54,31 @@ const App = () => {
               background: colorBgContainer,
             }}
           >
+            <div style={{ padding: '16px' }}>
+              <Input 
+                placeholder="Número do processo" 
+                value={processNumber}
+                onChange={(e) => setProcessNumber(e.target.value)}
+              />
+              <Button 
+                type="primary" 
+                onClick={handleSearch}
+                style={{ marginTop: '8px' }}
+              >
+                Consultar
+              </Button>
+            </div>
             <Menu
               mode="inline"
-              defaultSelectedKeys={['1']}
-              defaultOpenKeys={['sub1']}
+              defaultSelectedKeys={['sub1']}
               style={{
                 height: '100%',
                 borderRight: 0,
               }}
             >
-              <Menu.Item key="sub1" icon={<UserOutlined />}>Autores</Menu.Item>
-              <Menu.Item key="sub2" icon={<LaptopOutlined />}>Processos</Menu.Item>
-              <Menu.Item key="sub3" icon={<NotificationOutlined />}>Detalhes</Menu.Item>
+              <Menu.Item key="sub1" icon={<UserOutlined />} disabled={!filtered}>Autores</Menu.Item>
+              <Menu.Item key="sub2" icon={<LaptopOutlined />} disabled={!filtered}>Processos</Menu.Item>
+              <Menu.Item key="sub3" icon={<NotificationOutlined />} disabled={!filtered}>Detalhes</Menu.Item>
             </Menu>
           </Sider>
           <Layout
