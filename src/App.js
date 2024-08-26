@@ -16,8 +16,8 @@ const App = () => {
   const [filtered, setFiltered] = useState(false);
 
   const handleSearch = () => {
-    // Set filtered to true to simulate filtering
     setFiltered(true);
+    // Aqui você pode adicionar qualquer lógica adicional que desejar ao clicar em "Consultar"
   };
 
   return (
@@ -103,8 +103,14 @@ const App = () => {
               }}
             >
               <Routes>
-                <Route path="/" element={<BasicSearch />} />
-                <Route path="/full" element={<FullSearch />} />
+                <Route 
+                  path="/" 
+                  element={<BasicSearch processNumber={processNumber} filtered={filtered} />} 
+                />
+                <Route 
+                  path="/full" 
+                  element={<FullSearch processNumber={processNumber} filtered={filtered} />} 
+                />
               </Routes>
             </Content>
           </Layout>
