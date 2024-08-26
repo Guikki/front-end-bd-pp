@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { LaptopOutlined, NotificationOutlined, UserOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin, Upload, Table, message } from 'antd';
@@ -68,6 +68,7 @@ const App = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = () => {
     setLoading(true);
@@ -86,6 +87,7 @@ const App = () => {
       const sheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
       setExcelData(jsonData);
+      setFilteredData(jsonData); // Initialize filtered data
       message.success('Dados carregados com sucesso!');
     };
     reader.readAsArrayBuffer(file);
@@ -98,6 +100,22 @@ const App = () => {
         key: key,
       }))
     : [];
+
+  const handleFilterChange = useCallback((e) => {
+    const value = e.target.value.toLowerCase();
+    setProcessNumber(value);
+
+    if (value) {
+      const filtered = excelData.filter(row =>
+        Object.values(row).some(val =>
+          val?.toString().toLowerCase().includes(value)
+        )
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(excelData);
+    }
+  }, [excelData]);
 
   return (
     <Router>
@@ -117,9 +135,9 @@ const App = () => {
           <Sider width={200} style={{ background: colorBgContainer }}>
             <div style={{ padding: '16px' }}>
               <Input
-                placeholder="Número do processo"
+                placeholder="Número do processo ou qualquer informação"
                 value={processNumber}
-                onChange={(e) => setProcessNumber(e.target.value)}
+                onChange={handleFilterChange}
                 disabled={loading}
               />
               <Button 
@@ -175,7 +193,7 @@ const App = () => {
               }}
             >
               <Table
-                dataSource={excelData}
+                dataSource={filteredData}
                 columns={columns}
                 rowKey={(record, index) => index}
                 pagination={false}
