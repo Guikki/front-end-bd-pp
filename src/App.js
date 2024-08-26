@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { LaptopOutlined, NotificationOutlined, UserOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin, Upload, Table, message } from 'antd';
+import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin, Upload, Table, message, Pagination } from 'antd';
 import * as XLSX from 'xlsx';
 import BasicSearch from './pages/BasicSearch';
 import FullSearch from './pages/FullSearch';
@@ -69,6 +69,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
 
   const handleSearch = () => {
     setLoading(true);
@@ -117,6 +118,15 @@ const App = () => {
     }
   }, [excelData]);
 
+  const handlePaginationChange = (page, pageSize) => {
+    setPagination({ current: page, pageSize });
+  };
+
+  const paginatedData = filteredData.slice(
+    (pagination.current - 1) * pagination.pageSize,
+    pagination.current * pagination.pageSize
+  );
+
   return (
     <Router>
       <Layout>
@@ -153,7 +163,7 @@ const App = () => {
               beforeUpload={() => false}
               onChange={handleUpload}
               showUploadList={false}
-              
+              style={{ marginTop: '16px' }} // Ajusta a margem do botão de upload
             >
               <Button icon={<UploadOutlined />}>Upload Excel</Button>
             </Upload>
@@ -194,11 +204,20 @@ const App = () => {
               }}
             >
               <Table
-                dataSource={filteredData}
+                dataSource={paginatedData}
                 columns={columns}
                 rowKey={(record, index) => index}
-                pagination={false}
+                pagination={false} // Disable built-in pagination
                 scroll={{ x: 'max-content' }}
+              />
+              <Pagination
+                style={{ marginTop: '16px' }}
+                current={pagination.current}
+                pageSize={pagination.pageSize}
+                total={filteredData.length}
+                pageSizeOptions={['10', '50', '100', '500']}
+                onChange={handlePaginationChange}
+                showSizeChanger
               />
             </Content>
           </Layout>
