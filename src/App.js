@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col } from 'antd';
+import { LaptopOutlined, NotificationOutlined, UserOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons';
+import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin, Upload, Table, message } from 'antd';
+import * as XLSX from 'xlsx';
 import BasicSearch from './pages/BasicSearch';
 import FullSearch from './pages/FullSearch';
 
 const { Header, Content, Sider } = Layout;
 
-// Component to handle filters
 const Filters = ({ filters, setFilters }) => {
   const handleCheckboxChange = (filter) => {
     setFilters((prevFilters) => ({
@@ -43,27 +43,79 @@ const App = () => {
   const [processNumber, setProcessNumber] = useState('');
   const [filtered, setFiltered] = useState(false);
   const [filters, setFilters] = useState({
-    'Quantas vezes o mesmo autor entrou com processos contra nosso cliente?': false,
-    'Quantos processos de autor falecido vieram após seu falecimento? E quais processos são esses?': false,
-    'Quantos falecimentos ocorreram no decurso do processo?': false,
-    'Quais comarcas mais têm processos de monitorados?': false,
-    'Quantas vezes a mesma testemunha está presente na procuração?': false,
-    'Quantas vezes a justiça gratuita foi indeferida?': false,
-    'Quantos autores são analfabetos?': false,
-    'Quantas vezes o mesmo nome de terceiro aparece nos comprovantes de residência?': false,
-    'Quantos não têm comprovante de residência?': false,
-    'Quantos foram julgados por litigância de má fé?': false,
-    'Quantos tiveram ofícios enviados à OAB/ Autoridades policiais / núcleos de monitoramento?': false,
-    'Qual o principal subtipo de ação?': false,
-    'Quantas petições foram genéricas?': false,
-    'Quantos processos suspeitos de fraude são encerrados por acordo?': false,
+    'Nº DE INTEGRAÇÃO': false,
+    'ENVOLVIDO': false,
+    'PROCESSO_JUDICIAL': false,
+    'AUTOR FALECIDO': false,
+    'PETIÇÃO GENÉRICA?': false,
+    'DISPENSA CONCILIAÇÃO E/OU PEDE JUSTIÇA GRATUITA?': false,
+    'ANALFABETO? (ASSINADO COM DEDO?)': false,
+    'SE ANALFABETO: TESTEMUNHA 1 (PROCURAÇÃO E/OU DECLARAÇÃO)': false,
+    'SE ANALFABETO: TESTEMUNHA 2 (PROCURAÇÃO E/OU DECLARAÇÃO)': false,
+    'COMPROVANTE OU DECLARAÇÃO': false,
+    'HÁ DECISÕES COM EXPEDIÇÃO DE OFÍCIO?': false,
+    'OBSERVAÇÕES': false,
+    'CPF_CNPJ': false,
+    'AJUIZAMENTO': false,
+    'SUBTIPO_ACAO': false,
+    'ORGAO_JULGADOR': false,
+    'COMARCA': false,
+    'UF': false,
+    'ADVOGADO_PARTE': false,
+    'ANÁLISE': false,
   });
 
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [excelData, setExcelData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   const handleSearch = () => {
-    setFiltered(true);
+    setLoading(true);
+    setTimeout(() => {
+      setFiltered(true);
+      setLoading(false);
+    }, 2000);
   };
+
+  const handleUpload = ({ file }) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(sheet);
+      setExcelData(jsonData);
+      setFilteredData(jsonData); // Initialize filtered data
+      message.success('Dados carregados com sucesso!');
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const columns = excelData.length > 0
+    ? Object.keys(excelData[0]).map((key) => ({
+        title: key,
+        dataIndex: key,
+        key: key,
+      }))
+    : [];
+
+  const handleFilterChange = useCallback((e) => {
+    const value = e.target.value.toLowerCase();
+    setProcessNumber(value);
+
+    if (value) {
+      const filtered = excelData.filter(row =>
+        Object.values(row).some(val =>
+          val?.toString().toLowerCase().includes(value)
+        )
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(excelData);
+    }
+  }, [excelData]);
 
   return (
     <Router>
@@ -83,14 +135,28 @@ const App = () => {
           <Sider width={200} style={{ background: colorBgContainer }}>
             <div style={{ padding: '16px' }}>
               <Input
-                placeholder="Número do processo"
+                placeholder="Filtro de informação"
                 value={processNumber}
-                onChange={(e) => setProcessNumber(e.target.value)}
+                onChange={handleFilterChange}
+                disabled={loading}
               />
-              <Button type="primary" onClick={handleSearch} style={{ marginTop: '8px' }}>
-                Consultar
+              <Button 
+                type="primary" 
+                onClick={handleSearch} 
+                style={{ marginTop: '8px' }}
+                disabled={loading}
+              >
+                {loading ? <Spin indicator={<LoadingOutlined spin />} size="small" /> : 'Consultar'}
               </Button>
             </div>
+            <Upload
+              beforeUpload={() => false}
+              onChange={handleUpload}
+              showUploadList={false}
+              
+            >
+              <Button icon={<UploadOutlined />}>Upload Excel</Button>
+            </Upload>
             <Menu mode="inline" defaultSelectedKeys={['sub1']} style={{ height: '100%', borderRight: 0 }}>
               <Menu.Item key="sub1" icon={<UserOutlined />} disabled={!filtered}>
                 Autores
@@ -108,7 +174,6 @@ const App = () => {
               <Breadcrumb.Item>Home</Breadcrumb.Item>
             </Breadcrumb>
 
-            {/* Toggle Filters Button */}
             <Button
               type="default"
               onClick={() => setShowFilters(!showFilters)}
@@ -117,7 +182,6 @@ const App = () => {
               {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
             </Button>
 
-            {/* Filters Section */}
             {showFilters && <Filters filters={filters} setFilters={setFilters} />}
 
             <Content
@@ -129,10 +193,13 @@ const App = () => {
                 borderRadius: borderRadiusLG,
               }}
             >
-              <Routes>
-                <Route path="/" element={<BasicSearch processNumber={processNumber} filtered={filtered} />} />
-                <Route path="/full" element={<FullSearch processNumber={processNumber} filtered={filtered} />} />
-              </Routes>
+              <Table
+                dataSource={filteredData}
+                columns={columns}
+                rowKey={(record, index) => index}
+                pagination={false}
+                scroll={{ x: 'max-content' }}
+              />
             </Content>
           </Layout>
         </Layout>
