@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { LaptopOutlined, NotificationOutlined, UserOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col } from 'antd';
+import { LaptopOutlined, NotificationOutlined, UserOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin } from 'antd';
 import BasicSearch from './pages/BasicSearch';
 import FullSearch from './pages/FullSearch';
 
@@ -43,26 +43,39 @@ const App = () => {
   const [processNumber, setProcessNumber] = useState('');
   const [filtered, setFiltered] = useState(false);
   const [filters, setFilters] = useState({
-    'Quantas vezes o mesmo autor entrou com processos contra nosso cliente?': false,
-    'Quantos processos de autor falecido vieram após seu falecimento? E quais processos são esses?': false,
-    'Quantos falecimentos ocorreram no decurso do processo?': false,
-    'Quais comarcas mais têm processos de monitorados?': false,
-    'Quantas vezes a mesma testemunha está presente na procuração?': false,
-    'Quantas vezes a justiça gratuita foi indeferida?': false,
-    'Quantos autores são analfabetos?': false,
-    'Quantas vezes o mesmo nome de terceiro aparece nos comprovantes de residência?': false,
-    'Quantos não têm comprovante de residência?': false,
-    'Quantos foram julgados por litigância de má fé?': false,
-    'Quantos tiveram ofícios enviados à OAB/ Autoridades policiais / núcleos de monitoramento?': false,
-    'Qual o principal subtipo de ação?': false,
-    'Quantas petições foram genéricas?': false,
-    'Quantos processos suspeitos de fraude são encerrados por acordo?': false,
+    'Nº DE INTEGRAÇÃO': false,
+    'ENVOLVIDO': false,
+    'PROCESSO_JUDICIAL': false,
+    'AUTOR FALECIDO': false,
+    'PETIÇÃO GENÉRICA?': false,
+    'DISPENSA CONCILIAÇÃO E/OU PEDE JUSTIÇA GRATUITA?': false,
+    'ANALFABETO? (ASSINADO COM DEDO?)': false,
+    'SE ANALFABETO: TESTEMUNHA 1 (PROCURAÇÃO E/OU DECLARAÇÃO)': false,
+    'SE ANALFABETO: TESTEMUNHA 2 (PROCURAÇÃO E/OU DECLARAÇÃO)': false,
+    'COMPROVANTE OU DECLARAÇÃO': false,
+    'HÁ DECISÕES COM EXPEDIÇÃO DE OFÍCIO?': false,
+    'OBSERVAÇÕES': false,
+    'CPF_CNPJ': false,
+    'AJUIZAMENTO': false,
+    'SUBTIPO_ACAO': false,
+    'ORGAO_JULGADOR': false,
+    'COMARCA': false,
+    'UF': false,
+    'ADVOGADO_PARTE': false,
+    'ANÁLISE': false,
   });
 
   const [showFilters, setShowFilters] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSearch = () => {
-    setFiltered(true);
+    setLoading(true);
+    
+    // Simulando a consulta
+    setTimeout(() => {
+      setFiltered(true);
+      setLoading(false);
+    }, 2000);
   };
 
   return (
@@ -86,9 +99,15 @@ const App = () => {
                 placeholder="Número do processo"
                 value={processNumber}
                 onChange={(e) => setProcessNumber(e.target.value)}
+                disabled={loading}
               />
-              <Button type="primary" onClick={handleSearch} style={{ marginTop: '8px' }}>
-                Consultar
+              <Button 
+                type="primary" 
+                onClick={handleSearch} 
+                style={{ marginTop: '8px' }}
+                disabled={loading}
+              >
+                {loading ? <Spin indicator={<LoadingOutlined spin />} size="small" /> : 'Consultar'}
               </Button>
             </div>
             <Menu mode="inline" defaultSelectedKeys={['sub1']} style={{ height: '100%', borderRight: 0 }}>
