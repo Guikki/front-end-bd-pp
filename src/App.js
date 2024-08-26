@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import { LaptopOutlined, NotificationOutlined, UserOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin } from 'antd';
+import { LaptopOutlined, NotificationOutlined, UserOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons';
+import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin, Upload, Table, message } from 'antd';
+import * as XLSX from 'xlsx';
 import BasicSearch from './pages/BasicSearch';
 import FullSearch from './pages/FullSearch';
 
 const { Header, Content, Sider } = Layout;
 
-// Component to handle filters
 const Filters = ({ filters, setFilters }) => {
   const handleCheckboxChange = (filter) => {
     setFilters((prevFilters) => ({
@@ -67,16 +67,37 @@ const App = () => {
 
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [excelData, setExcelData] = useState([]);
 
   const handleSearch = () => {
     setLoading(true);
-    
-    // Simulando a consulta
     setTimeout(() => {
       setFiltered(true);
       setLoading(false);
     }, 2000);
   };
+
+  const handleUpload = ({ file }) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json(sheet);
+      setExcelData(jsonData);
+      message.success('Dados carregados com sucesso!');
+    };
+    reader.readAsArrayBuffer(file);
+  };
+
+  const columns = excelData.length > 0
+    ? Object.keys(excelData[0]).map((key) => ({
+        title: key,
+        dataIndex: key,
+        key: key,
+      }))
+    : [];
 
   return (
     <Router>
@@ -110,6 +131,13 @@ const App = () => {
                 {loading ? <Spin indicator={<LoadingOutlined spin />} size="small" /> : 'Consultar'}
               </Button>
             </div>
+            <Upload
+              beforeUpload={() => false}
+              onChange={handleUpload}
+              showUploadList={false}
+            >
+              <Button icon={<UploadOutlined />}>Upload Excel</Button>
+            </Upload>
             <Menu mode="inline" defaultSelectedKeys={['sub1']} style={{ height: '100%', borderRight: 0 }}>
               <Menu.Item key="sub1" icon={<UserOutlined />} disabled={!filtered}>
                 Autores
@@ -127,7 +155,6 @@ const App = () => {
               <Breadcrumb.Item>Home</Breadcrumb.Item>
             </Breadcrumb>
 
-            {/* Toggle Filters Button */}
             <Button
               type="default"
               onClick={() => setShowFilters(!showFilters)}
@@ -136,7 +163,6 @@ const App = () => {
               {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
             </Button>
 
-            {/* Filters Section */}
             {showFilters && <Filters filters={filters} setFilters={setFilters} />}
 
             <Content
@@ -148,10 +174,13 @@ const App = () => {
                 borderRadius: borderRadiusLG,
               }}
             >
-              <Routes>
-                <Route path="/" element={<BasicSearch processNumber={processNumber} filtered={filtered} />} />
-                <Route path="/full" element={<FullSearch processNumber={processNumber} filtered={filtered} />} />
-              </Routes>
+              <Table
+                dataSource={excelData}
+                columns={columns}
+                rowKey={(record, index) => index}
+                pagination={false}
+                scroll={{ x: 'max-content' }}
+              />
             </Content>
           </Layout>
         </Layout>
