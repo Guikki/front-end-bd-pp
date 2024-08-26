@@ -1,39 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { LaptopOutlined, NotificationOutlined, UserOutlined, LoadingOutlined, UploadOutlined } from '@ant-design/icons';
-import { Breadcrumb, Layout, Menu, theme, Input, Button, Checkbox, Row, Col, Spin, Upload, Table, message, Pagination } from 'antd';
+import { Breadcrumb, Layout, Menu, theme, Input, Button, Spin, Upload, Table, message, Pagination } from 'antd';
 import * as XLSX from 'xlsx';
-import BasicSearch from './pages/BasicSearch';
-import FullSearch from './pages/FullSearch';
 
 const { Header, Content, Sider } = Layout;
-
-const Filters = ({ filters, setFilters }) => {
-  const handleCheckboxChange = (filter) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [filter]: !prevFilters[filter],
-    }));
-  };
-
-  return (
-    <div style={{ padding: '16px', backgroundColor: '#f0f2f5', borderRadius: '8px' }}>
-      <h3>Filtros</h3>
-      <Row gutter={[16, 16]}>
-        {Object.keys(filters).map((filterKey) => (
-          <Col span={8} key={filterKey}>
-            <Checkbox
-              checked={filters[filterKey]}
-              onChange={() => handleCheckboxChange(filterKey)}
-            >
-              {filterKey}
-            </Checkbox>
-          </Col>
-        ))}
-      </Row>
-    </div>
-  );
-};
 
 const App = () => {
   const {
@@ -41,31 +12,6 @@ const App = () => {
   } = theme.useToken();
 
   const [processNumber, setProcessNumber] = useState('');
-  const [filtered, setFiltered] = useState(false);
-  const [filters, setFilters] = useState({
-    'Nº DE INTEGRAÇÃO': false,
-    'ENVOLVIDO': false,
-    'PROCESSO_JUDICIAL': false,
-    'AUTOR FALECIDO': false,
-    'PETIÇÃO GENÉRICA?': false,
-    'DISPENSA CONCILIAÇÃO E/OU PEDE JUSTIÇA GRATUITA?': false,
-    'ANALFABETO? (ASSINADO COM DEDO?)': false,
-    'SE ANALFABETO: TESTEMUNHA 1 (PROCURAÇÃO E/OU DECLARAÇÃO)': false,
-    'SE ANALFABETO: TESTEMUNHA 2 (PROCURAÇÃO E/OU DECLARAÇÃO)': false,
-    'COMPROVANTE OU DECLARAÇÃO': false,
-    'HÁ DECISÕES COM EXPEDIÇÃO DE OFÍCIO?': false,
-    'OBSERVAÇÕES': false,
-    'CPF_CNPJ': false,
-    'AJUIZAMENTO': false,
-    'SUBTIPO_ACAO': false,
-    'ORGAO_JULGADOR': false,
-    'COMARCA': false,
-    'UF': false,
-    'ADVOGADO_PARTE': false,
-    'ANÁLISE': false,
-  });
-
-  const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -74,7 +20,6 @@ const App = () => {
   const handleSearch = () => {
     setLoading(true);
     setTimeout(() => {
-      setFiltered(true);
       setLoading(false);
     }, 2000);
   };
@@ -116,6 +61,10 @@ const App = () => {
     } else {
       setFilteredData(excelData);
     }
+  }, [excelData]);
+
+  useEffect(() => {
+    setFilteredData(excelData); // Initial data load
   }, [excelData]);
 
   const handlePaginationChange = (page, pageSize) => {
@@ -168,13 +117,13 @@ const App = () => {
               <Button icon={<UploadOutlined />}>Upload Excel</Button>
             </Upload>
             <Menu mode="inline" defaultSelectedKeys={['sub1']} style={{ height: '100%', borderRight: 0 }}>
-              <Menu.Item key="sub1" icon={<UserOutlined />} disabled={!filtered}>
+              <Menu.Item key="sub1" icon={<UserOutlined />} disabled={!filteredData.length}>
                 Autores
               </Menu.Item>
-              <Menu.Item key="sub2" icon={<LaptopOutlined />} disabled={!filtered}>
+              <Menu.Item key="sub2" icon={<LaptopOutlined />} disabled={!filteredData.length}>
                 Processos
               </Menu.Item>
-              <Menu.Item key="sub3" icon={<NotificationOutlined />} disabled={!filtered}>
+              <Menu.Item key="sub3" icon={<NotificationOutlined />} disabled={!filteredData.length}>
                 Detalhes
               </Menu.Item>
             </Menu>
@@ -183,16 +132,6 @@ const App = () => {
             <Breadcrumb style={{ margin: '16px 0' }}>
               <Breadcrumb.Item>Home</Breadcrumb.Item>
             </Breadcrumb>
-
-            <Button
-              type="default"
-              onClick={() => setShowFilters(!showFilters)}
-              style={{ margin: '16px 0' }}
-            >
-              {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
-            </Button>
-
-            {showFilters && <Filters filters={filters} setFilters={setFilters} />}
 
             <Content
               style={{
@@ -207,17 +146,17 @@ const App = () => {
                 dataSource={paginatedData}
                 columns={columns}
                 rowKey={(record, index) => index}
-                pagination={false} // Disable built-in pagination
+                pagination={false}
                 scroll={{ x: 'max-content' }}
               />
               <Pagination
-                style={{ marginTop: '16px' }}
                 current={pagination.current}
                 pageSize={pagination.pageSize}
                 total={filteredData.length}
-                pageSizeOptions={['10', '50', '100', '500']}
                 onChange={handlePaginationChange}
                 showSizeChanger
+                onShowSizeChange={handlePaginationChange}
+                style={{ marginTop: '16px' }}
               />
             </Content>
           </Layout>
