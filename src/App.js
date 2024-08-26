@@ -135,7 +135,7 @@ const App = () => {
           <Sider width={200} style={{ background: colorBgContainer }}>
             <div style={{ padding: '16px' }}>
               <Input
-                placeholder="Número do processo ou qualquer informação"
+                placeholder="Filtro de informação"
                 value={processNumber}
                 onChange={handleFilterChange}
                 disabled={loading}
@@ -153,6 +153,7 @@ const App = () => {
               beforeUpload={() => false}
               onChange={handleUpload}
               showUploadList={false}
+              
             >
               <Button icon={<UploadOutlined />}>Upload Excel</Button>
             </Upload>
