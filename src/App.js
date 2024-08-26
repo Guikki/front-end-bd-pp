@@ -16,6 +16,7 @@ const App = () => {
   const [excelData, setExcelData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
+  const [lastUpdate, setLastUpdate] = useState('Nenhuma atualização');
 
   const handleSearch = () => {
     setLoading(true);
@@ -34,6 +35,7 @@ const App = () => {
       const jsonData = XLSX.utils.sheet_to_json(sheet);
       setExcelData(jsonData);
       setFilteredData(jsonData); // Initialize filtered data
+      setLastUpdate(new Date().toLocaleString()); // Update the last update time
       message.success('Dados carregados com sucesso!');
     };
     reader.readAsArrayBuffer(file);
@@ -127,6 +129,9 @@ const App = () => {
                 Detalhes
               </Menu.Item>
             </Menu>
+            <div style={{ padding: '16px', background: colorBgContainer }}>
+              Última atualização: {lastUpdate}
+            </div>
           </Sider>
           <Layout style={{ padding: '0 24px 24px' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>
