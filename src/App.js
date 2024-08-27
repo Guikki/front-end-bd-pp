@@ -37,7 +37,9 @@ const App = () => {
       setExcelData(jsonData);
       setFilteredData(jsonData); // Initialize filtered data
       setLastUpdate(new Date().toLocaleString()); // Update the last update time
-      message.success('Dados carregados com sucesso!');
+      
+      // Exibe a mensagem de sucesso com o nome do arquivo e a quantidade de registros carregados
+      message.success(`${file.name} carregado com sucesso com ${jsonData.length} registros!`);
     };
     reader.readAsArrayBuffer(file);
   };
