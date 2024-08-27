@@ -107,6 +107,8 @@ const App = () => {
                 style={{ marginTop: '8px' }}
                 disabled={loading}
               >
+              {loading && <Spin indicator={<LoadingOutlined spin />} />}
+
                 {loading ? <Spin indicator={<LoadingOutlined spin />} size="small" /> : 'Consultar'}
               </Button>
             </div>
