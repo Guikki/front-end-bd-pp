@@ -17,6 +17,7 @@ const App = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [lastUpdate, setLastUpdate] = useState('Nenhuma atualização');
+  const [showLastUpdate, setShowLastUpdate] = useState(false);
 
   const handleSearch = () => {
     setLoading(true);
@@ -78,6 +79,14 @@ const App = () => {
     pagination.current * pagination.pageSize
   );
 
+  const handleMenuClick = (key) => {
+    if (key === 'sub3') {
+      setShowLastUpdate(true);
+    } else {
+      setShowLastUpdate(false);
+    }
+  };
+
   return (
     <Router>
       <Layout>
@@ -93,22 +102,21 @@ const App = () => {
           </Menu>
         </Header>
         <Layout>
-          <Sider width={200} style={{ background: colorBgContainer }}>
-            <div style={{ padding: '16px' }}>
+          <Sider width={250} style={{ background: colorBgContainer, padding: '16px' }}>
+            <div style={{ marginBottom: '16px' }}>
               <Input
                 placeholder="Filtro de informação"
                 value={processNumber}
                 onChange={handleFilterChange}
                 disabled={loading}
+                style={{ marginBottom: '8px', width: '100%' }}
               />
               <Button 
                 type="primary" 
                 onClick={handleSearch} 
-                style={{ marginTop: '8px' }}
                 disabled={loading}
+                style={{ width: '100%' }}
               >
-              {loading && <Spin indicator={<LoadingOutlined spin />} />}
-
                 {loading ? <Spin indicator={<LoadingOutlined spin />} size="small" /> : 'Consultar'}
               </Button>
             </div>
@@ -116,11 +124,16 @@ const App = () => {
               beforeUpload={() => false}
               onChange={handleUpload}
               showUploadList={false}
-              style={{ marginTop: '16px' }} // Ajusta a margem do botão de upload
+              style={{ width: '100%' }}
             >
-              <Button icon={<UploadOutlined />}>Upload Excel</Button>
+              <Button icon={<UploadOutlined />} style={{ width: '100%' }}>Upload Excel</Button>
             </Upload>
-            <Menu mode="inline" defaultSelectedKeys={['sub1']} style={{ height: '100%', borderRight: 0 }}>
+            <Menu 
+              mode="inline" 
+              defaultSelectedKeys={['sub1']} 
+              style={{ height: '100%', borderRight: 0, marginTop: '16px' }}
+              onClick={(e) => handleMenuClick(e.key)}
+            >
               <Menu.Item key="sub1" icon={<UserOutlined />} disabled={!filteredData.length}>
                 Autores
               </Menu.Item>
@@ -131,9 +144,6 @@ const App = () => {
                 Detalhes
               </Menu.Item>
             </Menu>
-            <div style={{ padding: '16px', background: colorBgContainer }}>
-              Última atualização: {lastUpdate}
-            </div>
           </Sider>
           <Layout style={{ padding: '0 24px 24px' }}>
             <Breadcrumb style={{ margin: '16px 0' }}>
@@ -149,6 +159,11 @@ const App = () => {
                 borderRadius: borderRadiusLG,
               }}
             >
+              {showLastUpdate && (
+                <div style={{ marginBottom: '16px', textAlign: 'right' }}>
+                  Última atualização: {lastUpdate}
+                </div>
+              )}
               <Table
                 dataSource={paginatedData}
                 columns={columns}
