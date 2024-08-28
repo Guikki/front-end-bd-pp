@@ -154,13 +154,32 @@ const App = () => {
 
             <Content
               style={{
+                position: 'relative', // Necessary for the pseudo-element
                 padding: 24,
                 margin: '16px 0',
                 minHeight: 280,
                 background: colorBgContainer,
                 borderRadius: borderRadiusLG,
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Main shadow
+                overflow: 'hidden', // To prevent the pseudo-element from overflowing
               }}
             >
+              {/* Pseudo-element for the reflection */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderRadius: borderRadiusLG,
+                  background: `linear-gradient(transparent, rgba(0, 0, 0, 0.05))`,
+                  pointerEvents: 'none', // Ensures it doesn't interfere with content interaction
+                  transform: 'scaleY(-1)', // Mirrors the content vertically
+                  opacity: 0.5, // Makes the reflection subtle
+                }}
+              />
+              
               {showLastUpdate && (
                 <div style={{ marginBottom: '16px', textAlign: 'right' }}>
                   Última atualização: {lastUpdate}
