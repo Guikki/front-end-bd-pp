@@ -1,7 +1,8 @@
+// src/App.js
 import React from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Login from './Login'; // Importando o componente de login
-import Home from './Home'; // Importando o componente principal da aplicação
+import Home from './pages/Home'; // Importando o componente principal da aplicação
 
 const App = () => {
   return (
