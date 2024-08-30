@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cb6de540-612c-4f0e-a879-f7fb7f727e91" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/components/HeaderComponent.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/HeaderComponent.js" afterDir="false" />
+    <list default="true" id="cb6de540-612c-4f0e-a879-f7fb7f727e91" name="Changes" comment="Capsulamento do botão de logout">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,12 +26,22 @@
     &quot;assignee&quot;: &quot;Guikki&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Guikki/front-end-bd-pp&quot;,
-    &quot;accountId&quot;: &quot;ab467578-0d47-4b6b-8335-5847771099c2&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Guikki/front-end-bd-pp",
+    "accountId": "ab467578-0d47-4b6b-8335-5847771099c2"
+  },
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
+    },
+    "owner": "Guikki",
+    "repository": "front-end-bd-pp"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -46,7 +56,7 @@
     "Node.js.Home.js.executor": "Run",
     "Node.js.LogoutButton.js.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "refactorButtons",
+    "git-widget-placeholder": "#3 on refactorButtons",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/my-app",
     "node.js.detected.package.eslint": "true",
@@ -83,8 +93,17 @@
       <workItem from="1724854976901" duration="3451000" />
       <workItem from="1724869455703" duration="1558000" />
       <workItem from="1725039989140" duration="2941000" />
-      <workItem from="1725043083942" duration="2009000" />
+      <workItem from="1725043083942" duration="2926000" />
     </task>
+    <task id="LOCAL-00001" summary="Capsulamento do botão de logout">
+      <option name="closed" value="true" />
+      <created>1725046695833</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1725046695838</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -92,6 +111,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="mudanças para fazer o git funcionar" />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="Capsulamento do botão de logout" />
+    <option name="LAST_COMMIT_MESSAGE" value="Capsulamento do botão de logout" />
   </component>
 </project>
