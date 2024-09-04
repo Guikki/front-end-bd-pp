@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import HeaderComponent from '../components/HeaderComponent';
 import SidebarComponent from '../components/SidebarComponent';
-import TableComponent from '../components/TableComponent';
+import DataDisplay from '../components/DataDisplay';
 import { theme } from 'antd'; // Importando theme do Ant Design
 
 const { Header, Content } = Layout;
@@ -50,14 +50,6 @@ const Home = () => {
     reader.readAsArrayBuffer(file);
   };
 
-  const columns = excelData.length > 0
-    ? Object.keys(excelData[0]).map((key) => ({
-        title: key,
-        dataIndex: key,
-        key: key,
-      }))
-    : [];
-
   const handleFilterChange = useCallback((e) => {
     const value = e.target.value.toLowerCase();
     setProcessNumber(value);
@@ -85,11 +77,6 @@ const Home = () => {
   const handlePaginationChange = (page, pageSize) => {
     setPagination({ current: page, pageSize });
   };
-
-  const paginatedData = filteredData.slice(
-    (pagination.current - 1) * pagination.pageSize,
-    pagination.current * pagination.pageSize
-  );
 
   const handleMenuClick = (key) => {
     if (key === 'sub3') {
@@ -151,12 +138,7 @@ const Home = () => {
                 Última atualização: {lastUpdate}
               </div>
             )}
-            <TableComponent
-              data={paginatedData}
-              columns={columns}
-              pagination={pagination}
-              onPaginationChange={handlePaginationChange}
-            />
+            <DataDisplay /> {/* Substituindo o TableComponent pelo DataDisplay */}
           </Content>
         </Layout>
       </Layout>
