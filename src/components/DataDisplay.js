@@ -65,25 +65,25 @@ const DataDisplay = () => {
     { title: 'Advogado da Parte', dataIndex: 'advogado_da_parte', key: 'advogado_da_parte' },
   ];
 
-  if (loading) return <div>Carregando...</div>;
+  if (loading) return <Spin size="large" />;
 
   return (
     <div>
       <h1>Dados do Banco de Dados</h1>
-      <Table
-        dataSource={paginatedData}
-        columns={columns}
-        rowKey="id"
-        pagination={false}
-      />
+      <div style={{ overflowX: 'auto' }}>
+        <Table
+          dataSource={paginatedData}
+          columns={columns}
+          pagination={false} // Desabilitar a paginação do Ant Design
+          scroll={{ x: 'max-content' }} // Habilitar rolagem horizontal
+        />
+      </div>
       <Pagination
         current={currentPage}
         pageSize={pageSize}
         total={data.length}
         onChange={handlePaginationChange}
         showSizeChanger
-        onShowSizeChange={handlePaginationChange}
-        style={{ marginTop: '16px' }}
       />
     </div>
   );
