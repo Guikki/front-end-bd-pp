@@ -98,7 +98,7 @@ const Home = () => {
           processNumber={processNumber}
           onFilterChange={handleFilterChange}
           onUpload={handleUpload}
-          showLastUpdate={showLastUpdate}
+          showLastUpdate={false} // Não mostrar atualização na Sidebar
           onMenuClick={handleMenuClick}
         />
         <Layout style={{ padding: '0 24px 24px' }}>
@@ -134,8 +134,8 @@ const Home = () => {
             />
             
             {showLastUpdate && (
-              <div style={{ marginBottom: '16px', textAlign: 'right' }}>
-                Última atualização: {lastUpdate}
+              <div style={{ marginBottom: '16px' }}>
+                Última atualização do banco de dados: {lastUpdate}
               </div>
             )}
             <DataDisplay /> {/* Substituindo o TableComponent pelo DataDisplay */}
