@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Menu } from 'antd';
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
-import { Layout } from 'antd'; // Importando Layout do Ant Design
+import { Layout } from 'antd';
 
-const { Sider } = Layout; // Desestruturando Sider de Layout
+const { Sider } = Layout;
 
 const SidebarComponent = ({ onMenuClick }) => {
   return (

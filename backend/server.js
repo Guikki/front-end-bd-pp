@@ -20,7 +20,7 @@ app.use(express.json());
 // Rota para obter dados
 app.get('/api/dados', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM intelijonas');
+    const result = await pool.query('SELECT * FROM intelpepe');
     res.json(result.rows);
   } catch (err) {
     console.error(err);

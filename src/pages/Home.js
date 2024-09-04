@@ -1,14 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Layout, Input, Button, Spin, Upload, Table, message, Pagination, Breadcrumb } from 'antd';
-import { LoadingOutlined, UploadOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Layout, Breadcrumb, message } from 'antd';
 import * as XLSX from 'xlsx';
+import { useLocation, useNavigate } from 'react-router-dom';
 import HeaderComponent from '../components/HeaderComponent';
 import SidebarComponent from '../components/SidebarComponent';
 import DataDisplay from '../components/DataDisplay';
 import { theme } from 'antd'; // Importando theme do Ant Design
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
 const Home = () => {
   const {
@@ -16,22 +15,13 @@ const Home = () => {
   } = theme.useToken(); // Usando o theme para acessar tokens
 
   const [processNumber, setProcessNumber] = useState('');
-  const [loading, setLoading] = useState(false);
   const [excelData, setExcelData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
   const [lastUpdate, setLastUpdate] = useState('Nenhuma atualização');
   const [showLastUpdate, setShowLastUpdate] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const consultaGeral = location.pathname === '/full';
-
-  const handleSearch = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  };
 
   const handleUpload = ({ file }) => {
     const reader = new FileReader();
@@ -73,10 +63,6 @@ const Home = () => {
   useEffect(() => {
     setFilteredData(excelData);
   }, [excelData]);
-
-  const handlePaginationChange = (page, pageSize) => {
-    setPagination({ current: page, pageSize });
-  };
 
   const handleMenuClick = (key) => {
     if (key === 'sub3') {
@@ -138,7 +124,7 @@ const Home = () => {
                 Última atualização do banco de dados: {lastUpdate}
               </div>
             )}
-            <DataDisplay /> {/* Substituindo o TableComponent pelo DataDisplay */}
+            <DataDisplay filteredData={filteredData} /> {/* Passando o filteredData para o DataDisplay */}
           </Content>
         </Layout>
       </Layout>

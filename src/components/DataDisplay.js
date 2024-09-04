@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Pagination, Spin } from 'antd';
+import { Table, Pagination, Spin, Input } from 'antd';
 
 const DataDisplay = () => {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [filterText, setFilterText] = useState('');
+  const [capsLockOn, setCapsLockOn] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/dados');
         setData(response.data);
+        setFilteredData(response.data);
         setLoading(false);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
@@ -23,18 +27,34 @@ const DataDisplay = () => {
     fetchData();
   }, []);
 
+  const handleFilterChange = (e) => {
+    const value = e.target.value;
+    setFilterText(value);
+    const filtered = data.filter(item =>
+      Object.values(item).some(val =>
+        String(val).toLowerCase().includes(value.toLowerCase())
+      )
+    );
+    setFilteredData(filtered);
+  };
+  
+
+  const handleCapsLockCheck = (e) => {
+    const isCapsLockOn = e.getModifierState && e.getModifierState('CapsLock');
+    setCapsLockOn(isCapsLockOn);
+  };
+
   const handlePaginationChange = (page, size) => {
     setCurrentPage(page);
     setPageSize(size);
   };
 
-  const paginatedData = data.slice(
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
   const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
     { title: 'Nº de Integração', dataIndex: 'numero_de_integracao', key: 'numero_de_integracao' },
     { title: 'Envolvido', dataIndex: 'nome_autor', key: 'nome_autor' },
     { title: 'Processo Judicial', dataIndex: 'numero_processo', key: 'numero_processo' },
@@ -70,6 +90,13 @@ const DataDisplay = () => {
   return (
     <div>
       <h1>Dados do Banco de Dados</h1>
+      <Input
+        placeholder="Filtrar dados..."
+        value={filterText}
+        onChange={handleFilterChange}
+        onKeyUp={handleCapsLockCheck}
+        style={{ marginBottom: '16px' }}
+      />
       <div style={{ overflowX: 'auto' }}>
         <Table
           dataSource={paginatedData}
@@ -81,7 +108,7 @@ const DataDisplay = () => {
       <Pagination
         current={currentPage}
         pageSize={pageSize}
-        total={data.length}
+        total={filteredData.length}
         onChange={handlePaginationChange}
         showSizeChanger
       />
