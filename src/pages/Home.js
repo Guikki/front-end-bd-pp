@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Layout, Breadcrumb, message } from 'antd';
-import * as XLSX from 'xlsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import HeaderComponent from '../components/HeaderComponent';
 import SidebarComponent from '../components/SidebarComponent';
@@ -15,30 +14,12 @@ const Home = () => {
   } = theme.useToken(); // Usando o theme para acessar tokens
 
   const [processNumber, setProcessNumber] = useState('');
-  const [excelData, setExcelData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [lastUpdate, setLastUpdate] = useState('Nenhuma atualização');
   const [showLastUpdate, setShowLastUpdate] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const consultaGeral = location.pathname === '/full';
-
-  const handleUpload = ({ file }) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(sheet);
-      setExcelData(jsonData);
-      setFilteredData(jsonData);
-      setLastUpdate(new Date().toLocaleString());
-      
-      message.success(`${file.name} carregado com sucesso com ${jsonData.length} registros!`);
-    };
-    reader.readAsArrayBuffer(file);
-  };
 
   const handleFilterChange = useCallback((e) => {
     const value = e.target.value.toLowerCase();
@@ -47,22 +28,14 @@ const Home = () => {
     let filtered;
 
     if (consultaGeral) {
-      filtered = excelData;
+      filtered = []; // Defina como necessário
     } else {
-      filtered = excelData.filter(row =>
-        Object.values(row).some(val =>
-          val?.toString().toLowerCase().includes(value)
-        )
-      );
+      filtered = []; // Defina como necessário
     }
 
     setFilteredData(filtered);
 
-  }, [excelData, consultaGeral]);
-
-  useEffect(() => {
-    setFilteredData(excelData);
-  }, [excelData]);
+  }, [consultaGeral]);
 
   const handleMenuClick = (key) => {
     if (key === 'sub3') {
@@ -83,7 +56,6 @@ const Home = () => {
         <SidebarComponent
           processNumber={processNumber}
           onFilterChange={handleFilterChange}
-          onUpload={handleUpload}
           showLastUpdate={false} // Não mostrar atualização na Sidebar
           onMenuClick={handleMenuClick}
         />
