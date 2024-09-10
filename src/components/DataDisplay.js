@@ -14,6 +14,7 @@ const DataDisplay = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,6 +93,16 @@ const DataDisplay = () => {
     setSelectedColumns(checkedValues);
   };
 
+  const handleSelectAllChange = (e) => {
+    const checked = e.target.checked;
+    if (checked) {
+      setSelectedColumns(columnsOptions.map(col => col.value));
+    } else {
+      setSelectedColumns([]);
+    }
+    setSelectAll(checked);
+  };
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -118,12 +129,10 @@ const DataDisplay = () => {
   };
 
   const generateReport = () => {
-    // Filtra as colunas selecionadas
     const filteredColumns = columnsOptions.filter(column => 
       selectedColumns.includes(column.value)
     );
 
-    // Converte os dados filtrados para o formato do Excel com base nas colunas selecionadas
     const ws = XLSX.utils.json_to_sheet(filteredData.map(item => {
       let result = {};
       selectedColumns.forEach(col => {
@@ -178,6 +187,14 @@ const DataDisplay = () => {
         onCancel={handleCancel}
         width={600}
       >
+        <Checkbox
+          indeterminate={selectedColumns.length > 0 && selectedColumns.length < columnsOptions.length}
+          checked={selectAll}
+          onChange={handleSelectAllChange}
+          style={{ marginBottom: '16px', display: 'block' }}
+        >
+          
+        </Checkbox>
         <Row gutter={[16, 16]}>
           {columnsOptions.map(option => (
             <Col span={12} key={option.value}>
