@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Pagination, Spin, Input, Modal, Checkbox, Button } from 'antd';
+import { Table, Pagination, Spin, Input, Modal, Checkbox, Button, Row, Col } from 'antd';
 
 const DataDisplay = () => {
   const [data, setData] = useState([]);
@@ -142,11 +142,23 @@ const DataDisplay = () => {
         onOk={handleApplyFilters}
         onCancel={handleCancel}
       >
-        <Checkbox.Group
-          options={columnsOptions}
-          onChange={handleCheckboxChange}
-          value={selectedColumns}
-        />
+        <Row gutter={[16, 16]}>
+          {columnsOptions.map(option => (
+            <Col span={12} key={option.value}>
+              <Checkbox
+                value={option.value}
+                checked={selectedColumns.includes(option.value)}
+                onChange={() => handleCheckboxChange(
+                  selectedColumns.includes(option.value)
+                    ? selectedColumns.filter(col => col !== option.value)
+                    : [...selectedColumns, option.value]
+                )}
+              >
+                {option.label}
+              </Checkbox>
+            </Col>
+          ))}
+        </Row>
       </Modal>
 
       {/* Tabela de Dados */}
