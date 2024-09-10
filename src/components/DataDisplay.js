@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Table, Pagination, Spin, Input, Modal, Checkbox, Button, Row, Col } from 'antd';
+import * as XLSX from 'xlsx';
 
 const DataDisplay = () => {
   const [data, setData] = useState([]);
@@ -10,9 +11,8 @@ const DataDisplay = () => {
   const [pageSize, setPageSize] = useState(10);
   const [filterText, setFilterText] = useState('');
   const [capsLockOn, setCapsLockOn] = useState(false);
-  
-  // Estados para o modal de Filtro Avançado
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState([]);
 
   useEffect(() => {
@@ -57,7 +57,6 @@ const DataDisplay = () => {
     currentPage * pageSize
   );
 
-  // Colunas disponíveis para o filtro
   const columnsOptions = [
     { label: 'Nº de Integração', value: 'numero_de_integracao' },
     { label: 'Envolvido', value: 'nome_autor' },
@@ -102,11 +101,42 @@ const DataDisplay = () => {
   };
 
   const handleApplyFilters = () => {
-    // Fechar o modal ao aplicar filtros
     setIsModalVisible(false);
   };
 
-  // Filtrar colunas selecionadas
+  const showConfirmModal = () => {
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setIsConfirmModalVisible(false);
+  };
+
+  const handleConfirmOk = () => {
+    generateReport();
+    setIsConfirmModalVisible(false);
+  };
+
+  const generateReport = () => {
+    // Filtra as colunas selecionadas
+    const filteredColumns = columnsOptions.filter(column => 
+      selectedColumns.includes(column.value)
+    );
+
+    // Converte os dados filtrados para o formato do Excel com base nas colunas selecionadas
+    const ws = XLSX.utils.json_to_sheet(filteredData.map(item => {
+      let result = {};
+      selectedColumns.forEach(col => {
+        result[columnsOptions.find(option => option.value === col)?.label] = item[col];
+      });
+      return result;
+    }));
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Relatório");
+    XLSX.writeFile(wb, "relatorio.xlsx");
+  };
+
   const filteredColumns = columnsOptions.filter(column => 
     selectedColumns.includes(column.value)
   ).map(col => ({
@@ -135,12 +165,18 @@ const DataDisplay = () => {
         Filtro Avançado
       </Button>
 
+      {/* Botão para gerar o relatório */}
+      <Button type="default" onClick={showConfirmModal} style={{ marginBottom: '16px', marginLeft: '8px' }}>
+        Gerar Relatório
+      </Button>
+
       {/* Modal para selecionar colunas */}
       <Modal
         title="Filtros Avançados"
         visible={isModalVisible}
         onOk={handleApplyFilters}
         onCancel={handleCancel}
+        width={600}
       >
         <Row gutter={[16, 16]}>
           {columnsOptions.map(option => (
@@ -148,10 +184,10 @@ const DataDisplay = () => {
               <Checkbox
                 value={option.value}
                 checked={selectedColumns.includes(option.value)}
-                onChange={() => handleCheckboxChange(
-                  selectedColumns.includes(option.value)
-                    ? selectedColumns.filter(col => col !== option.value)
-                    : [...selectedColumns, option.value]
+                onChange={(e) => handleCheckboxChange(
+                  e.target.checked
+                    ? [...selectedColumns, e.target.value]
+                    : selectedColumns.filter(col => col !== e.target.value)
                 )}
               >
                 {option.label}
@@ -159,6 +195,18 @@ const DataDisplay = () => {
             </Col>
           ))}
         </Row>
+      </Modal>
+
+      {/* Modal de confirmação */}
+      <Modal
+        title="Confirmar Geração de Relatório"
+        visible={isConfirmModalVisible}
+        onOk={handleConfirmOk}
+        onCancel={handleConfirmCancel}
+        okText="Gerar e Baixar"
+        cancelText="Cancelar"
+      >
+        <p>Você tem certeza de que deseja gerar e baixar o relatório com as colunas selecionadas?</p>
       </Modal>
 
       {/* Tabela de Dados */}

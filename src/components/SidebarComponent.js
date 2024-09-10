@@ -14,13 +14,13 @@ const SidebarComponent = ({ onMenuClick }) => {
         style={{ height: '100%', borderRight: 0, marginTop: '16px' }}
         onClick={(e) => onMenuClick(e.key)}
       >
-        <Menu.Item key="sub1" icon={<UserOutlined />}>
+        <Menu.Item key="sub1" icon={<UserOutlined />} disabled>
           Autores
         </Menu.Item>
-        <Menu.Item key="sub2" icon={<LaptopOutlined />}>
+        <Menu.Item key="sub2" icon={<LaptopOutlined />} disabled>
           Processos
         </Menu.Item>
-        <Menu.Item key="sub3" icon={<NotificationOutlined />}>
+        <Menu.Item key="sub3" icon={<NotificationOutlined />} disabled>
           Detalhes
         </Menu.Item>
       </Menu>
