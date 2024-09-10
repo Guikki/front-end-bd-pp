@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Pagination, Spin, Input } from 'antd';
+import { Table, Pagination, Spin, Input, Modal, Checkbox, Button } from 'antd';
 
 const DataDisplay = () => {
   const [data, setData] = useState([]);
@@ -10,6 +10,10 @@ const DataDisplay = () => {
   const [pageSize, setPageSize] = useState(10);
   const [filterText, setFilterText] = useState('');
   const [capsLockOn, setCapsLockOn] = useState(false);
+  
+  // Estados para o modal de Filtro Avançado
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +41,6 @@ const DataDisplay = () => {
     );
     setFilteredData(filtered);
   };
-  
 
   const handleCapsLockCheck = (e) => {
     const isCapsLockOn = e.getModifierState && e.getModifierState('CapsLock');
@@ -54,42 +57,71 @@ const DataDisplay = () => {
     currentPage * pageSize
   );
 
-  const columns = [
-    { title: 'Nº de Integração', dataIndex: 'numero_de_integracao', key: 'numero_de_integracao' },
-    { title: 'Envolvido', dataIndex: 'nome_autor', key: 'nome_autor' },
-    { title: 'Processo Judicial', dataIndex: 'numero_processo', key: 'numero_processo' },
-    { title: 'Autor Falecido', dataIndex: 'autor_falecido', key: 'autor_falecido' },
-    { title: 'Petição Genérica?', dataIndex: 'peticao_generica', key: 'peticao_generica' },
-    { title: 'Dispensa Conciliação/Justiça Gratuita?', dataIndex: 'conciliacao_ou_justicagratuita', key: 'conciliacao_ou_justicagratuita' },
-    { title: 'Analfabeto?', dataIndex: 'analfabeto', key: 'analfabeto' },
-    { title: 'Testemunha 1', dataIndex: 'testemunha_1', key: 'testemunha_1' },
-    { title: 'Testemunha 2', dataIndex: 'testemunha_2', key: 'testemunha_2' },
-    { title: 'Comprovante ou Declaração', dataIndex: 'comprovante_declaracao', key: 'comprovante_declaracao' },
-    { title: 'Nome de Terceiro?', dataIndex: 'existe_nome_terceiro', key: 'existe_nome_terceiro' },
-    { title: 'Nome do Terceiro', dataIndex: 'nome_terceiro', key: 'nome_terceiro' },
-    { title: 'Número da Linha/Medidor/Hidrômetro', dataIndex: 'numero_medidor', key: 'numero_medidor' },
-    { title: 'Código do Cliente/Usuário/Matrícula', dataIndex: 'matricula_cliente', key: 'matricula_cliente' },
-    { title: 'Número do Contrato/Conta', dataIndex: 'numero_contrato', key: 'numero_contrato' },
-    { title: 'Número da Fatura/Nota Fiscal', dataIndex: 'numero_nota_fiscal', key: 'numero_nota_fiscal' },
-    { title: 'Código Débito Automático', dataIndex: 'numero_debito_automatico', key: 'numero_debito_automatico' },
-    { title: 'Status Processual', dataIndex: 'status_processual', key: 'status_processual' },
-    { title: 'Multa por Litigância de Má-fé?', dataIndex: 'multa_ou_mafe', key: 'multa_ou_mafe' },
-    { title: 'Decisões com Expedição de Ofício?', dataIndex: 'oficio', key: 'oficio' },
-    { title: 'Observações', dataIndex: 'observacoes', key: 'observacoes' },
-    { title: 'CPF/CNPJ', dataIndex: 'cpf_cnpj', key: 'cpf_cnpj' },
-    { title: 'Ajuizamento', dataIndex: 'ajuizamento', key: 'ajuizamento' },
-    { title: 'Subtipo de Ação', dataIndex: 'subtipo_acao', key: 'subtipo_acao' },
-    { title: 'Órgão Julgador', dataIndex: 'orgao_julgador', key: 'orgao_julgador' },
-    { title: 'Comarca', dataIndex: 'comarca', key: 'comarca' },
-    { title: 'UF', dataIndex: 'uf', key: 'uf' },
-    { title: 'Advogado da Parte', dataIndex: 'advogado_da_parte', key: 'advogado_da_parte' },
+  // Colunas disponíveis para o filtro
+  const columnsOptions = [
+    { label: 'Nº de Integração', value: 'numero_de_integracao' },
+    { label: 'Envolvido', value: 'nome_autor' },
+    { label: 'Processo Judicial', value: 'numero_processo' },
+    { label: 'Autor Falecido', value: 'autor_falecido' },
+    { label: 'Petição Genérica?', value: 'peticao_generica' },
+    { label: 'Dispensa Conciliação/Justiça Gratuita?', value: 'conciliacao_ou_justicagratuita' },
+    { label: 'Analfabeto?', value: 'analfabeto' },
+    { label: 'Testemunha 1', value: 'testemunha_1' },
+    { label: 'Testemunha 2', value: 'testemunha_2' },
+    { label: 'Comprovante ou Declaração', value: 'comprovante_declaracao' },
+    { label: 'Nome de Terceiro?', value: 'existe_nome_terceiro' },
+    { label: 'Nome do Terceiro', value: 'nome_terceiro' },
+    { label: 'Número da Linha/Medidor/Hidrômetro', value: 'numero_medidor' },
+    { label: 'Código do Cliente/Usuário/Matrícula', value: 'matricula_cliente' },
+    { label: 'Número do Contrato/Conta', value: 'numero_contrato' },
+    { label: 'Número da Fatura/Nota Fiscal', value: 'numero_nota_fiscal' },
+    { label: 'Código Débito Automático', value: 'numero_debito_automatico' },
+    { label: 'Status Processual', value: 'status_processual' },
+    { label: 'Multa por Litigância de Má-fé?', value: 'multa_ou_mafe' },
+    { label: 'Decisões com Expedição de Ofício?', value: 'oficio' },
+    { label: 'Observações', value: 'observacoes' },
+    { label: 'CPF/CNPJ', value: 'cpf_cnpj' },
+    { label: 'Ajuizamento', value: 'ajuizamento' },
+    { label: 'Subtipo de Ação', value: 'subtipo_acao' },
+    { label: 'Órgão Julgador', value: 'orgao_julgador' },
+    { label: 'Comarca', value: 'comarca' },
+    { label: 'UF', value: 'uf' },
+    { label: 'Advogado da Parte', value: 'advogado_da_parte' },
   ];
+
+  const handleCheckboxChange = (checkedValues) => {
+    setSelectedColumns(checkedValues);
+  };
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleApplyFilters = () => {
+    // Fechar o modal ao aplicar filtros
+    setIsModalVisible(false);
+  };
+
+  // Filtrar colunas selecionadas
+  const filteredColumns = columnsOptions.filter(column => 
+    selectedColumns.includes(column.value)
+  ).map(col => ({
+    title: col.label,
+    dataIndex: col.value,
+    key: col.value
+  }));
 
   if (loading) return <Spin size="large" />;
 
   return (
     <div>
       <h1>Dados do Banco de Dados</h1>
+
+      {/* Campo de Filtro Rápido */}
       <Input
         placeholder="Filtrar dados..."
         value={filterText}
@@ -97,14 +129,41 @@ const DataDisplay = () => {
         onKeyUp={handleCapsLockCheck}
         style={{ marginBottom: '16px' }}
       />
+
+      {/* Botão para abrir o modal de Filtro Avançado */}
+      <Button type="primary" onClick={showModal} style={{ marginBottom: '16px' }}>
+        Filtro Avançado
+      </Button>
+
+      {/* Modal para selecionar colunas */}
+      <Modal
+        title="Filtros Avançados"
+        visible={isModalVisible}
+        onOk={handleApplyFilters}
+        onCancel={handleCancel}
+      >
+        <Checkbox.Group
+          options={columnsOptions}
+          onChange={handleCheckboxChange}
+          value={selectedColumns}
+        />
+      </Modal>
+
+      {/* Tabela de Dados */}
       <div style={{ overflowX: 'auto' }}>
         <Table
           dataSource={paginatedData}
-          columns={columns}
-          pagination={false} // Desabilitar a paginação do Ant Design
-          scroll={{ x: 'max-content' }} // Habilitar rolagem horizontal
+          columns={filteredColumns.length ? filteredColumns : columnsOptions.map(col => ({
+            title: col.label,
+            dataIndex: col.value,
+            key: col.value
+          }))}
+          pagination={false} 
+          scroll={{ x: 'max-content' }} 
         />
       </div>
+
+      {/* Paginação */}
       <Pagination
         current={currentPage}
         pageSize={pageSize}
