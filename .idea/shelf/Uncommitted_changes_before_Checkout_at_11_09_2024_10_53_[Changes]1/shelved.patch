@@ -1,0 +1,21 @@
+Index: src/App.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// src/App.js\r\nimport React from 'react';\r\nimport { Route, Routes, Navigate } from 'react-router-dom';\r\nimport Login from './Login'; // Importando o componente de login\r\nimport Home from './pages/Home'; // Importando o componente principal da aplicação\r\n\r\nconst App = () => {\r\n  return (\r\n    <Routes>\r\n      <Route path=\"/\" element={<Navigate to=\"/login\" />} /> {/* Redireciona para a página de login */}\r\n      <Route path=\"/login\" element={<Login />} /> {/* Página de Login */}\r\n      <Route path=\"/home\" element={<Home />} /> {/* Página Principal */}\r\n      <Route path=\"/full\" element={<Home />} /> {/* Página de Consulta Geral */}\r\n    </Routes>\r\n  );\r\n};\r\n\r\nexport default App;\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/App.js b/src/App.js
+--- a/src/App.js	(revision 79723859f49e14c9de728c9f17a8f9b788c46af1)
++++ b/src/App.js	(date 1725468356581)
+@@ -1,8 +1,8 @@
+ // src/App.js
+ import React from 'react';
+ import { Route, Routes, Navigate } from 'react-router-dom';
+-import Login from './Login'; // Importando o componente de login
+-import Home from './pages/Home'; // Importando o componente principal da aplicação
++import Login from './Login';
++import Home from './pages/Home';
+ 
+ const App = () => {
+   return (
