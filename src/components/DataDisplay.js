@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Pagination, Spin, Input, Modal, Checkbox, Button, Row, Col } from 'antd';
+import { Table, Pagination, Spin, Input, Modal, Checkbox, Row, Col } from 'antd';
 import * as XLSX from 'xlsx';
+import FiltroAvancadoButton from './buttons/FiltroAvancadoButton';
+import GerarRelatorioButton from './buttons/GerarRelatorioButton';
 
 const DataDisplay = () => {
   const [data, setData] = useState([]);
@@ -169,15 +171,9 @@ const DataDisplay = () => {
         style={{ marginBottom: '16px' }}
       />
 
-      {/* Botão para abrir o modal de Filtro Avançado */}
-      <Button type="primary" onClick={showModal} style={{ marginBottom: '16px' }}>
-        Filtro Avançado
-      </Button>
-
-      {/* Botão para gerar o relatório */}
-      <Button type="default" onClick={showConfirmModal} style={{ marginBottom: '16px', marginLeft: '8px' }}>
-        Gerar Relatório
-      </Button>
+      {/* Botões separados */}
+      <FiltroAvancadoButton onClick={showModal} />
+      <GerarRelatorioButton onClick={showConfirmModal} />
 
       {/* Modal para selecionar colunas */}
       <Modal
@@ -193,7 +189,7 @@ const DataDisplay = () => {
           onChange={handleSelectAllChange}
           style={{ marginBottom: '16px', display: 'block' }}
         >
-          
+          Selecionar Todos
         </Checkbox>
         <Row gutter={[16, 16]}>
           {columnsOptions.map(option => (
@@ -246,7 +242,7 @@ const DataDisplay = () => {
         pageSize={pageSize}
         total={filteredData.length}
         onChange={handlePaginationChange}
-        showSizeChanger
+        style={{ marginTop: '16px' }}
       />
     </div>
   );
