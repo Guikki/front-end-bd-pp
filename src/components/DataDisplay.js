@@ -183,14 +183,16 @@ const DataDisplay = () => {
         onCancel={handleCancel}
         width={600}
       >
-        <Checkbox
-          indeterminate={selectedColumns.length > 0 && selectedColumns.length < columnsOptions.length}
-          checked={selectAll}
-          onChange={handleSelectAllChange}
-          style={{ marginBottom: '16px', display: 'block' }}
-        >
-          Selecionar Todos
-        </Checkbox>
+        {/* Div para um style para alinhamento dos filtros avançados */}
+       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+         <Checkbox
+           indeterminate={selectedColumns.length > 0 && selectedColumns.length < columnsOptions.length}
+           checked={selectAll}
+           onChange={handleSelectAllChange}
+         />
+         <span style={{ marginLeft: '8px' }}>Selecionar Todos</span>
+       </div>
+
         <Row gutter={[16, 16]}>
           {columnsOptions.map(option => (
             <Col span={12} key={option.value}>
