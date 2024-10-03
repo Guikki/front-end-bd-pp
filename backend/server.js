@@ -5,12 +5,12 @@ const cors = require('cors');
 const app = express();
 const port = 5000;
 
-// Configuração do banco de dados PostgreSQL
+// Configuração do banco de dados PostgreSQL no servidor
 const pool = new Pool({
-  host: 'localhost',
-  user: 'postgres',
-  password: 'adm',
-  database: 'banco',
+  host: '165.227.84.203',
+  user: 'u_app_pp',
+  password: 'X7NaDPdnsC0dyvu0',
+  database: 'hectum',
   port: 5432,
 });
 
