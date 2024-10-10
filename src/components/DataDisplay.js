@@ -19,7 +19,7 @@ const DataDisplay = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/dados');
+        const response = await axios.get('165.227.84.203');
         setData(response.data);
         setFilteredData(response.data);
         setLoading(false);
