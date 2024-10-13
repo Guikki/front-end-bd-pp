@@ -19,16 +19,19 @@ const DataDisplay = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('165.227.84.203');
+        const response = await axios.get('http://localhost:5000/api/dados'); // Atualize o localhost caso o servidor esteja rodando em outro domínio ou IP
+        
+        console.log(response.data); // Verificar os dados no console
+  
         setData(response.data);
         setFilteredData(response.data);
         setLoading(false);
       } catch (error) {
-        console.error('Erro ao buscar dados:', error);
+        console.error('Erro ao buscar dados:', error); // Mostrar erro detalhado
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, []);
 
