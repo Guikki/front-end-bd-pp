@@ -20,14 +20,21 @@ app.use(express.json());
 // Rota para obter dados do banco
 app.get('/api/dados', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM sua_tabela_aqui');
+    console.log('Buscando dados da tabela antifraude...');
+    const result = await pool.query('SELECT * FROM public.antifraude');
+    console.log('Dados recebidos:', result.rows);
     res.json(result.rows);
   } catch (err) {
-    console.error('Erro ao buscar dados:', err);
+    console.error('Erro ao buscar dados do banco:', err);
     res.status(500).json({ error: 'Erro ao buscar dados' });
   }
 });
-
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send({ message: 'Ocorreu um erro no servidor', error: err.message });
 });
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Servidor rodando em http://165.227.84.203:${port}`);
+});
+
