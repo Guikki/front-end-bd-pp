@@ -4,6 +4,7 @@ import { Table, Pagination, Spin, Input, Modal, Checkbox, Row, Col } from 'antd'
 import * as XLSX from 'xlsx';
 import FiltroAvancadoButton from './buttons/FiltroAvancadoButton';
 import GerarRelatorioButton from './buttons/GerarRelatorioButton';
+import UploadButton from './buttons/UploadButton';
 
 const DataDisplay = () => {
   const [data, setData] = useState([]);
@@ -174,6 +175,7 @@ const DataDisplay = () => {
       {/* Botões separados */}
       <FiltroAvancadoButton onClick={showModal} />
       <GerarRelatorioButton onClick={showConfirmModal} />
+      <UploadButton onClick={showModal}/>
 
       {/* Modal para selecionar colunas */}
       <Modal
