@@ -20,8 +20,8 @@ app.use(express.json());
 // Rota para obter dados do banco
 app.get('/api/dados', async (req, res) => {
   try {
-    console.log('Buscando dados da tabela antifraude...');
-    const result = await pool.query('SELECT * FROM public.antifraude');
+    console.log('Buscando dados da tabela rotinas_dados_tabela...');
+    const result = await pool.query('SELECT * FROM public.rotinas_dados_tabela');
     console.log('Dados recebidos:', result.rows);
     res.json(result.rows);
   } catch (err) {
